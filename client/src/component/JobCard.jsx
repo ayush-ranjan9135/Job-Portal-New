@@ -1,6 +1,7 @@
 import React from 'react'
 import { assets } from '../assets/assets'
 import { useNavigate } from 'react-router-dom'
+import JobListing from './JobListing'
 
 export const JobCard = ({job}) => {
 
