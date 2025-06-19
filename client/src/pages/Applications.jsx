@@ -18,35 +18,38 @@ const Applications = () => {
   const [isEdit,setIsEdit] = useState(false) 
   const [resume,setResume] = useState(null)
 
-  const {backendUrl , userData , userApplications , fetchUserData ,fetchUserApplications} = useContext(AppContext)
+  const {backendUrl , userData , userApplications , fetchUserData ,fetchUserApplications} = useContext(AppContext);
 
-  const updateResume = async () =>{
+ const updateResume = async () => {
+  try {
+    const formData = new FormData();
+    formData.append('resume', resume);
 
-    try {
-      const fornData = new FormData()
-      FormData.append('resume',resume)
-
-      const token = await getToken()
-      const {data} = await axios.post(backendUrl+'/api/users/update-resume',
-        fornData,
-        {headers:{Authorization:`Bearer ${token}`}}
-      )
-
-      if(data.success){
-        toast.success(data.message)
-        await fetchUserData()
-      }else{
-        toast.error(data.message)
+    const token = await getToken();
+    const { data } = await axios.post(
+      backendUrl + '/api/users/update-resume',
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
+    );
 
-    } catch (error) {
-      toast.error(error.message)
+    if (data.success) {
+      toast.success(data.message);
+      await fetchUserData();
+    } else {
+      toast.error(data.message);
     }
+  } catch (error) {
+    toast.error(error.message);
+  }
 
-    setIsEdit(false)
-    setResume(null)
+  setIsEdit(false);
+  setResume(null);
+};
 
-  } 
 
   useEffect(() =>{
     if(user){
