@@ -2,6 +2,7 @@ import express from 'express'
 import {
   changeJobApplicantsStatus,
   changeVisiblity,
+  getAllCompanies,
   getCompanyData,
   getCompanyJobApplicants,
   getCompanyPostedJob,
@@ -20,6 +21,9 @@ router.post('/register', upload.single('image'), registerCompany)
 
 // Company login
 router.post('/login', loginCompany)
+
+// Debug: Get all companies
+router.get('/debug-companies', getAllCompanies)
 
 // Get company data
 router.get('/company', protectCompany, getCompanyData)

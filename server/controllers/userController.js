@@ -8,10 +8,19 @@ export const getUserData = async (req, res) => {
   const userId = req.auth.userId;
 
   try {
-    const user = await User.findById(userId);
+    let user = await User.findById(userId);
 
     if (!user) {
-      return res.json({ success: false, message: "User not found" });
+      const sessionClaims = req.auth.sessionClaims;
+      user = await User.create({
+        _id: userId,
+        name: sessionClaims?.firstName && sessionClaims?.lastName 
+          ? `${sessionClaims.firstName} ${sessionClaims.lastName}` 
+          : "User",
+        email: sessionClaims?.email || sessionClaims?.primaryEmail || `${userId}@temp.com`,
+        image: sessionClaims?.imageUrl || sessionClaims?.image_url || "https://via.placeholder.com/150",
+        resume: ""
+      });
     }
 
     res.json({ success: true, user });
@@ -60,10 +69,6 @@ export const getUserJobApplications = async (req, res) => {
       .populate("companyId", "name email image")
       .populate("jobId", "title description location category level salary")
       .exec();
-
-    if (!applications || applications.length === 0) {
-      return res.json({ success: false, message: "No job applications found for this user." });
-    }
 
     return res.json({ success: true, applications });
   } catch (error) {

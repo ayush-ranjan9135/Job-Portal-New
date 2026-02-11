@@ -48,18 +48,33 @@ export const registerCompany = async (req, res) => {
   }
 };
 
+// Get all companies (for debugging)
+export const getAllCompanies = async (req, res) => {
+  try {
+    const companies = await Company.find({}, 'name email');
+    console.log('All companies in database:', companies);
+    res.json({ success: true, companies });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
 // Company login
 export const loginCompany = async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("Login attempt for email:", email);
+
   try {
     const company = await Company.findOne({ email });
+    console.log("Company found:", company ? "Yes" : "No");
 
     if (!company) {
       return res.json({ success: false, message: "Invalid email or password" });
     }
 
     const isMatch = await bcrypt.compare(password, company.password);
+    console.log("Password match:", isMatch);
 
     if (isMatch) {
       res.json({
@@ -76,6 +91,7 @@ export const loginCompany = async (req, res) => {
       res.json({ success: false, message: "Invalid email or password" });
     }
   } catch (error) {
+    console.log("Login error:", error.message);
     res.json({ success: false, message: error.message });
   }
 };
