@@ -7,7 +7,6 @@ A Full Stack Job Portal where companies can post jobs and users can apply seamle
 <hr>
 
 <h2>📌 Project Overview</h2>
-
 <p>
 The <strong>Job Portal Application</strong> is a full-stack web platform designed to connect job seekers and companies.
 Companies can register, post jobs, and manage applications.
