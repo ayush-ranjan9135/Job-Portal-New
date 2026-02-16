@@ -18,7 +18,8 @@ await connectDB();
 await connectCloudinary();
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://job-portal-frontend.onrender.com', 'https://job-portal-new-sigma-green.vercel.app'],
+  origin: ['http://localhost:5173', 'https://job-portal-frontend.onrender.com', 'https://job-portal-new-sigma-green.vercel.app', 'https://job-portal-new-client-three.vercel.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
 app.use(express.json());
