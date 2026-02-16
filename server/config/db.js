@@ -10,8 +10,10 @@ const connectDB = async () => {
       console.log("❌ Database connection error:", err)
     );
 
-    await mongoose.connect(`${process.env.MONGODB_URI}/job-portal`);
-    console.log("🔗 Attempting to connect to:", process.env.MONGODB_URI);
+    console.log("🔗 Attempting to connect to MongoDB...");
+    await mongoose.connect(`${process.env.MONGODB_URI}/job-portal`, {
+      serverSelectionTimeoutMS: 5000,
+    });
   } catch (error) {
     console.log("❌ MongoDB connection failed:", error.message);
     process.exit(1);
