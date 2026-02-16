@@ -35,21 +35,15 @@ export const AppContextProvider=(props)=>{
     const fetchJobs = async ()=>{
 
         try {
-            console.log('Fetching jobs from:', backendUrl+'/api/jobs')
-            
-            const {data} =await axios.get(backendUrl+'/api/jobs')
-
-            console.log('Jobs response:', data)
+            const {data} =await axios.get(`${backendUrl}/api/jobs`)
 
             if(data.success){
                 setJobs(data.jobs)
-                console.log('Jobs set:', data.jobs)
             }else{
                 toast.error(data.message)
             }
 
         } catch (error) {
-            console.error('Fetch jobs error:', error)
             toast.error(error.message)
 
         }
@@ -65,7 +59,6 @@ export const AppContextProvider=(props)=>{
 
             if(data.success){
                 setCompanyData(data.company)
-                console.log(data)
             }else{
                 toast.error(data.message)
             }
