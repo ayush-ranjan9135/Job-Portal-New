@@ -18,7 +18,7 @@ await connectDB();
 await connectCloudinary();
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://job-portal-new-client-three.vercel.app'],
+  origin: ['http://localhost:5173', 'https://job-portal-new-client-three.vercel.app', 'https://job-portal-new-client-amber.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
