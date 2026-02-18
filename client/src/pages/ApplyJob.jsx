@@ -25,7 +25,7 @@ const ApplyJob = () => {
   const [JobData,setJobData] = useState(null)
   const [isAlreadyApplied,setsAlreadyApplied] =useState(false)
 
-  const { jobs , backendUrl , userData , userApplications ,fetchUserApplication } = useContext(AppContext)
+  const { jobs , backendUrl , userData , userApplications ,fetchUserApplications } = useContext(AppContext)
 
   const fetchJob = async () => {
 
@@ -66,7 +66,8 @@ const ApplyJob = () => {
 
     if(data.success){
       toast.success(data.message)
-      fetchUserApplication()
+      fetchUserApplications()
+      setsAlreadyApplied(true)
     }
     else{
       toast.error(data.message)
@@ -76,6 +77,35 @@ const ApplyJob = () => {
 
       toast.error(error.message)
 
+    }
+  }
+
+  const handleExternalApply = async () => {
+    if(!userData){
+      return toast.error('Login to apply for jobs')
+    }
+
+    if(!userData.resume){
+      navigate('/applications')
+      return toast.error('Upload resume to apply')
+    }
+
+    try {
+      const token = await getToken()
+      const {data} = await axios.post(backendUrl+'/api/users/apply',
+        {jobId: JobData._id},
+        {headers:{Authorization:`Bearer ${token}`}}
+      )
+
+      if(data.success){
+        fetchUserApplications()
+        setsAlreadyApplied(true)
+        window.open(JobData.applicationLink, '_blank')
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
     }
   }
 
@@ -130,8 +160,12 @@ const ApplyJob = () => {
             </div>
           </div>
 
-          <div className='flex flex-col justify-center text-end text-sm max-md:mx-auto max-md:text-center'>
-            <button onClick={applyHandler} className='bg-blue-600 p-2.5 px-10 text-white rounded'>{isAlreadyApplied ? 'Already Applied':'Apply Now'}</button>
+          <div className='flex flex-col justify-center text-end text-sm max-md:mx-auto max-md:text-center gap-2'>
+            {JobData.applicationLink ? (
+              <button onClick={handleExternalApply} className='bg-blue-600 p-2.5 px-10 text-white rounded' disabled={isAlreadyApplied}>{isAlreadyApplied ? 'Already Applied':'Apply on Company Site'}</button>
+            ) : (
+              <button onClick={applyHandler} className='bg-blue-600 p-2.5 px-10 text-white rounded' disabled={isAlreadyApplied}>{isAlreadyApplied ? 'Already Applied':'Apply Now'}</button>
+            )}
             <p className='mt-1 text-gray-600'>Posted {moment(JobData.date).fromNow()}</p>
           </div>
 
@@ -142,7 +176,11 @@ const ApplyJob = () => {
         <div className='w-full lg:w-2/3'>
           <h2 className='font-bold text-2xl mb-4'>Job description</h2>
           <div className='rich-text' dangerouslySetInnerHTML={{__html:JobData.description}}></div>
-          <button onClick={applyHandler} className='bg-blue-600 p-2.5 px-10 text-white rounded mt-10'>{isAlreadyApplied ? 'Already Applied':'Apply Now'}</button>
+          {JobData.applicationLink ? (
+            <button onClick={handleExternalApply} className='bg-blue-600 p-2.5 px-10 text-white rounded mt-10' disabled={isAlreadyApplied}>{isAlreadyApplied ? 'Already Applied':'Apply on Company Site'}</button>
+          ) : (
+            <button onClick={applyHandler} className='bg-blue-600 p-2.5 px-10 text-white rounded mt-10' disabled={isAlreadyApplied}>{isAlreadyApplied ? 'Already Applied':'Apply Now'}</button>
+          )}
         </div>
         {/* Rigth section More Jobs */}
         <div className='w-full lg:w-1/3 mt-8 lg:mt-0 lg:ml-8 space-y-5'>
