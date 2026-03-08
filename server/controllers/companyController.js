@@ -304,7 +304,17 @@ export const resendOTP = async (req, res) => {
     await company.save();
 
     // Send OTP email
-    await sendOTPEmail(company.email, otp, 'verification');
+    const emailResult = await sendOTPEmail(company.email, otp, 'verification');
+    
+    if (!emailResult.success) {
+      console.error('❌ Email send failed:', emailResult.error);
+      return res.json({ 
+        success: false, 
+        message: 'Registration successful but failed to send OTP. Please use resend OTP.',
+        companyId: company._id,
+        needsOTP: true
+      });
+    }
 
     res.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
@@ -334,7 +344,15 @@ export const forgotPassword = async (req, res) => {
     await company.save();
 
     // Send OTP email
-    await sendOTPEmail(email, otp, 'reset');
+    const emailResult = await sendOTPEmail(email, otp, 'reset');
+    
+    if (!emailResult.success) {
+      console.error('❌ Failed to send reset OTP:', emailResult.error);
+      return res.json({ 
+        success: false, 
+        message: 'Failed to send OTP email. Please try again later.' 
+      });
+    }
 
     res.json({ success: true, message: "OTP sent to your email", companyId: company._id });
   } catch (error) {

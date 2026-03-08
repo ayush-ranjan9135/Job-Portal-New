@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-// Create transporter
+// Create transporter with better configuration for production
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
@@ -8,6 +8,20 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
+  },
+  tls: {
+    rejectUnauthorized: false
+  },
+  debug: true,
+  logger: true
+});
+
+// Verify transporter on startup
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('❌ Email transporter verification failed:', error);
+  } else {
+    console.log('✅ Email server is ready to send messages');
   }
 });
 
@@ -40,10 +54,18 @@ export const sendOTPEmail = async (email, otp, purpose = 'verification') => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    return { success: true };
+    console.log(`📧 Attempting to send OTP email to: ${email}`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Email sent successfully:', info.messageId);
+    return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('Email send error:', error);
+    console.error('❌ Email send error:', error);
+    console.error('Error details:', {
+      code: error.code,
+      command: error.command,
+      response: error.response,
+      responseCode: error.responseCode
+    });
     return { success: false, error: error.message };
   }
 };
