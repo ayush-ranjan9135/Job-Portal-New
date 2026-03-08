@@ -35,18 +35,15 @@ export const AppContextProvider=(props)=>{
     const fetchJobs = async ()=>{
 
         try {
-            
-            const {data} =await axios.get(backendUrl+'/api/jobs')
+            const {data} =await axios.get(`${backendUrl}/api/jobs`)
 
             if(data.success){
                 setJobs(data.jobs)
-                console.log(data.jobs)
             }else{
                 toast.error(data.message)
             }
 
         } catch (error) {
-            
             toast.error(error.message)
 
         }
@@ -62,7 +59,6 @@ export const AppContextProvider=(props)=>{
 
             if(data.success){
                 setCompanyData(data.company)
-                console.log(data)
             }else{
                 toast.error(data.message)
             }
@@ -153,6 +149,7 @@ export const AppContextProvider=(props)=>{
         userApplications,setUserApplications,
         fetchUserData,
         fetchUserApplications,
+        fetchJobs
     };
     return (<AppContext.Provider value={value}>
         {props.children}

@@ -13,7 +13,7 @@ const JobListing = () => {
     const [selectedCategories,setSelectedCategories]=useState([])
     const [selectedLocation,setSelectedLocation]=useState([])
 
-    const [filteredJobs,setFilteredJobs]=useState(jobs)
+    const [filteredJobs,setFilteredJobs]=useState([])
 
     const hendleCategoryChange= (category) => {
         setSelectedCategories(

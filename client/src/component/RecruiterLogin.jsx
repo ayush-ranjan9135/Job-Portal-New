@@ -4,6 +4,8 @@ import { AppContext } from '../context/AppContext'
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
 import {toast} from 'react-toastify'
+import VerifyOTP from './VerifyOTP'
+import ForgotPassword from './ForgotPassword'
 
 
 const RecruiterLogin = () => {
@@ -18,6 +20,10 @@ const RecruiterLogin = () => {
     const [image,setImage] = useState(false)
 
     const [isTextDataSubmited,setIsTextDataSubmited] = useState(false)
+
+    const [showVerifyOTP, setShowVerifyOTP] = useState(false)
+    const [showForgotPassword, setShowForgotPassword] = useState(false)
+    const [pendingCompanyId, setPendingCompanyId] = useState('')
 
     const {setShowRecruiterLogin, backendUrl , setCompanyToken , setCompanyData}= useContext(AppContext)
 
@@ -38,8 +44,10 @@ const RecruiterLogin = () => {
             localStorage.setItem('companyToken', data.token)
             setShowRecruiterLogin(false)
             navigate('/dashboard')
-
-          }else{
+          } else if (data.needsVerification) {
+            setPendingCompanyId(data.companyId)
+            setShowVerifyOTP(true)
+          } else{
             toast.error(data.message)
           }
         }else{
@@ -53,11 +61,9 @@ const RecruiterLogin = () => {
           const {data} = await axios.post(backendUrl +'/api/company/register',formData)
 
           if(data.success){
-            setCompanyData(data.company)
-            setCompanyToken(data.token)
-            localStorage.setItem('companyToken', data.token)
-            setShowRecruiterLogin(false)
-            navigate('/dashboard')
+            toast.success(data.message)
+            setPendingCompanyId(data.companyId)
+            setShowVerifyOTP(true)
           }else{
             toast.error(data.message)
           }
@@ -78,6 +84,7 @@ const RecruiterLogin = () => {
     })
 
   return (
+    <>
     <div className="fixed top-0 left-0 w-full h-full z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
       <form onSubmit={(onSubmitHandler)} className='relative bg-white p-10 rounded-xl text-slate-500'>
         <h1 className='text-center text-2xl text-neutral-700 font-medium'>Recruiter {state}</h1>
@@ -115,7 +122,7 @@ const RecruiterLogin = () => {
         
         </>}
 
-        {state === 'Login' && <p className='text-sm text-blue-600 mt-4 cursor-pointer'>Forgot password?</p>} 
+        {state === 'Login' && <p onClick={() => setShowForgotPassword(true)} className='text-sm text-blue-600 mt-4 cursor-pointer'>Forgot password?</p>} 
 
         <button type='submit' className='bg-blue-600 w-full text-white py-2 rounded-full mt-4'>
           {state ==='Login' ? 'login' : isTextDataSubmited ? 'create account': 'next'}
@@ -130,6 +137,23 @@ const RecruiterLogin = () => {
         <img  onClick={e => setShowRecruiterLogin(false)} className="absolute top-5 right-5 cursor-pointer" src={assets.cross_icon}/>
       </form>
     </div>
+
+    {showVerifyOTP && (
+      <VerifyOTP 
+        companyId={pendingCompanyId} 
+        onClose={() => {
+          setShowVerifyOTP(false)
+          setShowRecruiterLogin(false)
+        }}
+      />
+    )}
+
+    {showForgotPassword && (
+      <ForgotPassword 
+        onClose={() => setShowForgotPassword(false)}
+      />
+    )}
+    </>
   )
 }
 

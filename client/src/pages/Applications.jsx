@@ -64,7 +64,7 @@ const Applications = () => {
       <h2 className='text-xl font-semibold'>Your Resume</h2>
       <div className='flex gap-2 mb-6 mt-3 '>
         {
-          isEdit ||userData &&userData.resume ===""
+          isEdit || (userData && userData.resume ==="")
           ? <>
           <label className='flex items-center' htmlFor='resumeUpload'>
             <p className='bg-blue-100 text-blue-600 px-4 py-2 rounded-lg mr-2'>{resume ? resume.name : "Select Resume" }</p>
@@ -95,7 +95,7 @@ const Applications = () => {
           </tr>
         </thead>
         <tbody>
-          {userApplications.map((job,index) => true ? (
+          {userApplications && userApplications.length > 0 ? userApplications.map((job,index) => (
             <tr key={index}>
               <td className='py-3 px-4 flex items-center gap-2 border-b'>
                 <img className='w-8 h-8' src={job.companyId.image}/>
@@ -110,7 +110,11 @@ const Applications = () => {
                 </span>
                 </td>
             </tr>
-          ) : (null) )}
+          )) : (
+            <tr>
+              <td colSpan="5" className='py-4 px-4 text-center text-gray-500'>No applications yet</td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

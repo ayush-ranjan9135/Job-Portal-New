@@ -12,7 +12,7 @@ const ManageJobs = () => {
 
   const navigate = useNavigate()
 
-  const [jobs,setJobs] = useState(false)
+  const [jobs,setJobs] = useState([])
   
   const {backendUrl,companyToken} = useContext(AppContext)
 
@@ -65,7 +65,7 @@ const ManageJobs = () => {
     }
   },[companyToken])
 
-  return jobs ? jobs.length ===0 ?(
+  return jobs.length ===0 ?(
   <div className='flex items-center justify-center h-[70vh]'>
     <p className='text-xl sm:text-2xl'>No Job Available Or Posted!</p>
   </div> 
@@ -106,7 +106,7 @@ const ManageJobs = () => {
         <button onClick={() => navigate('/dashboard/add-job')} className=' bg-black text-white py-2 px-4 rounded'>Add new job</button>
       </div>
     </div>
-  ):<Loading />
+  )
 }
 
 export default ManageJobs

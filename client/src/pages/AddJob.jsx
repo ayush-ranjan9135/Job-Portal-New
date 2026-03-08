@@ -12,6 +12,7 @@ const AddJob = () => {
   const [category,setCategory] = useState('Programming');
   const [level,setLevel] = useState('Beginner level');
   const [salary,setSalary] = useState(0);
+  const [applicationLink,setApplicationLink] = useState('');
 
   const editorRef = useRef(null)
   const quillRef = useRef(null)
@@ -26,7 +27,7 @@ const AddJob = () => {
       const description =quillRef.current.root.innerHTML
 
       const {data} = await axios.post(backendUrl+'/api/company/post-job',
-        {title,description,location,category,salary,level},
+        {title,description,location,category,salary,level,applicationLink},
         {headers: {token:companyToken}}
       )
 
@@ -34,6 +35,7 @@ const AddJob = () => {
         toast.success(data.message)
         setTitle('')
         setSalary(0)
+        setApplicationLink('')
         quillRef.current.root.innerHTML = ""
       }else{
         toast.error(data.message)
@@ -108,7 +110,15 @@ const AddJob = () => {
 
       <div>
         <p className='mb-2'>Salary</p>
-        <input min={0} className='w-full px-3 py-2 border-2 border-gray-300 rounded' onChange={e => setSalary(e.target.value)} type='Number' placeholder='2500'/>
+        <input min={0} className='w-full px-3 py-2 border-2 border-gray-300 rounded' onChange={e => setSalary(e.target.value)} value={salary} type='Number' placeholder='2500'/>
+      </div>
+
+      <div className='w-full max-w-lg'>
+        <p className='mb-2'>Application Link (Optional)</p>
+        <input type='url' placeholder='https://example.com/apply'
+        onChange={e => setApplicationLink(e.target.value)} value={applicationLink}
+        className='w-full px-3 py-2 border-2 border-gray-300 rounded'
+        />
       </div>
 
       <button className='w-28 py-3 mt-4 bg-black text-white rounded'>Add</button>
