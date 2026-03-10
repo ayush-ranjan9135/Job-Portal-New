@@ -1,6 +1,6 @@
-import { Resend } from 'resend';
+import { BrevoClient } from '@getbrevo/brevo';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const client = new BrevoClient({ apiKey: process.env.BREVO_API_KEY });
 
 export const sendOTPEmail = async (email, otp, purpose = 'verification') => {
   const subject = purpose === 'verification' 
@@ -12,11 +12,11 @@ export const sendOTPEmail = async (email, otp, purpose = 'verification') => {
     : `Your password reset OTP is: ${otp}. Valid for 5 minutes.`;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: 'Job Portal <onboarding@resend.dev>',
-      to: email,
-      subject: subject,
-      html: `
+    const data = await client.transactionalEmails.sendTransacEmail({
+      subject,
+      sender: { name: 'Job Portal', email: process.env.BREVO_SENDER_EMAIL },
+      to: [{ email }],
+      htmlContent: `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #2563eb;">${subject}</h2>
           <p>Hello,</p>
@@ -29,16 +29,10 @@ export const sendOTPEmail = async (email, otp, purpose = 'verification') => {
         </div>
       `
     });
-
-    if (error) {
-      console.error('❌ Resend error:', error);
-      return { success: false, error: error.message };
-    }
-
-    console.log('✅ Email sent via Resend:', data.id);
-    return { success: true, messageId: data.id };
+    console.log('✅ Email sent via Brevo:', data.messageId);
+    return { success: true, messageId: data.messageId };
   } catch (error) {
-    console.error('❌ Email send error:', error);
+    console.error('❌ Brevo error:', error);
     return { success: false, error: error.message };
   }
 };
